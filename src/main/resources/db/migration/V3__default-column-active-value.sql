@@ -1,0 +1,2 @@
+ALTER TABLE product
+ALTER active SET DEFAULT true
