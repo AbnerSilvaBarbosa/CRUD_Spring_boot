@@ -1,16 +1,10 @@
 package com.example.CRUD_Spring.controllers;
-
 import com.example.CRUD_Spring.DTO.RequestProductDTO;
-import com.example.CRUD_Spring.DTO.RequestUpdateProductDTO;
 import com.example.CRUD_Spring.domain.product.Product;
-import com.example.CRUD_Spring.exceptions.ProductNotFoundException;
 import com.example.CRUD_Spring.services.ProductServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,20 +35,29 @@ public class ProductController {
         try {
             Product product = productServices.updateProductById(id,body);
             return ResponseEntity.ok(product);
-        }catch (ProductNotFoundException e){
-            System.out.println(e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }catch (RuntimeException e){
+            throw new RuntimeException(e);
         }
 
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteProduct(@PathVariable String id){
+    public ResponseEntity disableProduct(@PathVariable String id){
         try {
-            String product = productServices.deleteProductById(id);
+            Product product = productServices.disableProductById(id);
             return ResponseEntity.ok(product);
-        }catch (ProductNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity activatedProduct(@PathVariable String id){
+        try{
+            Product product = productServices.activatedProductById(id);
+            return ResponseEntity.ok(product);
+        }catch(RuntimeException e){
+            throw new RuntimeException(e);
         }
     }
 }

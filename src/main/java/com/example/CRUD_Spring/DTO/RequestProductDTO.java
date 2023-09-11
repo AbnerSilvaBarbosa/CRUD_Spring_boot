@@ -6,6 +6,7 @@ public record RequestProductDTO(
         @NotNull
         String name,
         @NotNull
-        int price_in_cents) {
+        int price_in_cents
+) {
 
 }

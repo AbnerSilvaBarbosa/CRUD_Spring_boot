@@ -1,12 +1,12 @@
 package com.example.CRUD_Spring.services;
 
 import com.example.CRUD_Spring.DTO.RequestProductDTO;
-import com.example.CRUD_Spring.DTO.RequestUpdateProductDTO;
 import com.example.CRUD_Spring.domain.product.Product;
-import com.example.CRUD_Spring.exceptions.ProductNotFoundException;
 import com.example.CRUD_Spring.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ public class ProductServices {
     private ProductRepository productRepository;
 
     public List<Product> getAllProducts(){
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAllByActiveTrue();
         return products;
     }
 
@@ -27,6 +27,7 @@ public class ProductServices {
         return productRepository.save(product);
     }
 
+    @Transactional
     public Product updateProductById(String id,RequestProductDTO requestProductDTO){
         Optional<Product> optionalProduct = productRepository.findById(id);
 
@@ -35,27 +36,49 @@ public class ProductServices {
 
             product.setName(requestProductDTO.name());
             product.setPrice_in_cents(requestProductDTO.price_in_cents());
-
-            productRepository.save(product);
-
             return product;
         }
 
-        throw new ProductNotFoundException("Produto com o ID " + id + " não encontrado");
+        throw new EntityNotFoundException();
 
     }
 
-    public String deleteProductById(String id){
+    @Transactional
+    public Product disableProductById(String id){
         Optional<Product> productOptional = productRepository.findById(id);
 
         if(productOptional.isPresent()){
-            productRepository.deleteById(id);
-            return "Produto com o ID " + id + " foi deletado com sucesso";
+            Product product = productOptional.get();
+
+
+            product.setActive(false);
+            return product;
+
+
+
+
         }
 
-        throw new ProductNotFoundException("Produto com o ID " + id + " não encontrado");
+        throw new EntityNotFoundException();
 
 
+    }
+
+    @Transactional
+    public Product activatedProductById(String id){
+        Optional<Product> optionalProduct = productRepository.findById(id);
+
+        if(optionalProduct.isPresent()){
+
+            Product product = optionalProduct.get();
+
+
+            product.setActive(true);
+            return product;
+
+        }
+
+        throw new EntityNotFoundException();
     }
 
 }

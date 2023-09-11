@@ -8,9 +8,9 @@ import lombok.*;
 @Entity(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
 public class Product {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
@@ -18,10 +18,11 @@ public class Product {
 
     private String name;
     private int price_in_cents;
-    private boolean active;
+    private Boolean active;
 
     public Product(RequestProductDTO requestProductDTO){
         this.name = requestProductDTO.name();
         this.price_in_cents = requestProductDTO.price_in_cents();
+        this.active = true;
     }
 }
